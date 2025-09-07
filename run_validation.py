@@ -59,16 +59,16 @@ def generation(model_name, input_df, seed, sampling_params, tokenizer):
     repeated_ground_truths = input_df["ground_truth"].repeat(expected_n).tolist()
 
     # Placeholder for actual reward function
-    rewards = score_deepscaler_post_training(completions=flat_completions, answer=repeated_ground_truths)
+    rewards = score_deepscaler_validation(completions=flat_completions, answer=repeated_ground_truths)
 
     result_df = pd.DataFrame({
-        "prompt": input_df["prompt"].repeat(expected_n).tolist(),
-        "ground_truth": repeated_ground_truths,
-        "completion": flat_completions,
+        # "prompt": input_df["prompt"].repeat(expected_n).tolist(),
+        # "ground_truth": repeated_ground_truths,
+        # "completion": flat_completions,
         "reward": rewards,
         "seed": seed,
         "problem_id": input_df["problem_id"].repeat(expected_n).tolist(),
-    })
+    }).groupby(["problem_id", "seed"]).reward.mean().reset_index()
 
     return result_df
 
@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
     if not args.generation_only:
         
-        from main import create_evaluation_df
+        from run_scoring import create_evaluation_df
 
         root_result_dir = f'{args.output_dir}/{args.model_family}'
         label_df = create_evaluation_df(root_result_dir=root_result_dir, base_model=args.model_name)
