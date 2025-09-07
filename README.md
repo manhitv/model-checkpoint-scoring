@@ -84,7 +84,7 @@ We are capturing the following information and save it every 100 steps.
 }
 ```
 
-#### 2.2. Our method
+#### 2.2. Details
 
 For each checkpoint, we will compute the following metrics:
 - **Average reward** over samples from a range of steps `[step - delta, step]` (baseline)
@@ -93,6 +93,7 @@ For each checkpoint, we will compute the following metrics:
 After model is trained, run the following function to score all checkpoints and select the best checkpoint with highest average reward. 
 
 ```bash
+# bashfile/run_scoring.sh
 python run_scoring.py --base_family='Qwen' --base_model='Qwen3-0.6B' --train_data={train_data} --difficulty='average_nll' --list_eval_data math_500 minerva olympiad amc23 --save_result=True
 ```
 This will:
@@ -121,5 +122,6 @@ python run_eval.py --task=gsm8k --model_name=path/to/best/found/checkpoint/ --mo
 ---
 ### 4. Generating and evaluating over validation set
 ```bash
+# bashfiles/run_validation.sh
 VLLM_USE_V1=0 python run_validation.py --model_family='Qwen' --model_name='Qwen2.5-0.5B-Instruct' --list_seed 1025 2025 3025 --n_samples={n_samples} --train_data={train_data} --metric=None
 ```
